@@ -1,12 +1,23 @@
 const router = require('express').Router();
 const multer = require('multer');
-const upload = multer({dest: 'public/uploads/'});
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/uploads')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+})
+const upload = multer({ storage: storage });
 
 router.post('/', upload.single('profile'), (req, res) => {
     try{
-        console.log(req.file);
-        console.log(req.body);
-        res.send(req.file);
+        console.log(JSON.stringify(req.file))
+        var response = '<a href="/">Home</a><br>'
+        response += "Files uploaded successfully.<br>"
+        response += `<img src="/uploads/${req.file.filename}" /><br>`
+        return res.send(response)
     }catch(err){
         res.send(400);
     }
